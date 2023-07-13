@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationAPI", "AuthenticationAPI\AuthenticationAPI.csproj", "{18C89B20-C1FB-4984-B845-13EF10C3EAA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chatbot", "Chatbot\Chatbot.csproj", "{2B422834-7A24-44CA-AC54-082BB37F67D8}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18C89B20-C1FB-4984-B845-13EF10C3EAA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C89B20-C1FB-4984-B845-13EF10C3EAA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C89B20-C1FB-4984-B845-13EF10C3EAA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C89B20-C1FB-4984-B845-13EF10C3EAA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B422834-7A24-44CA-AC54-082BB37F67D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B422834-7A24-44CA-AC54-082BB37F67D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B422834-7A24-44CA-AC54-082BB37F67D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B422834-7A24-44CA-AC54-082BB37F67D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
