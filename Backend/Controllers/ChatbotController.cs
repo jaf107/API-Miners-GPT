@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Chatbot.Services;
 
+
 namespace Chatbot.Controllers
 {
     [Route("api/[controller]")]
@@ -75,6 +76,20 @@ namespace Chatbot.Controllers
             }
 
             return BadRequest("No image file was uploaded.");
+        }
+
+        [HttpPost("/api/v1/generate/image", Name ="GenerateImageFromPrompt")]
+        public async Task<IActionResult> GenerateImageFromPrompt([FromBody] MessageRequest request)
+        {
+            var result = await new ChatbotService().Call_StableDiffusion(request.Message);
+            var jsonObject = JsonConvert.DeserializeObject<dynamic>(result);
+
+
+            if (result != null)
+                return Ok(result);
+            else
+                return BadRequest("Not found");
+
         }
 
     }
