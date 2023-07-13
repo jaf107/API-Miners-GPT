@@ -6,7 +6,7 @@ namespace Chatbot.Services
 {
     public class ChatbotService
     {
-        public string CallOpenAPI(string prompt)
+        public string CallOpenAPI_text(string prompt)
         {
             DotNetEnv.Env.Load();
             string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -27,6 +27,18 @@ namespace Chatbot.Services
                 }
             }
             return answer;
+        }
+
+        public string CallCloseAPI_Title(string prompt)
+        {
+            string result = string.Empty;
+            return result;
+        }
+
+        public string CallCloseAPI_Description(string prompt)
+        {
+            string result = string.Empty;
+            return result;
         }
     }
 }
