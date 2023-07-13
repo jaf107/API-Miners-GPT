@@ -97,9 +97,22 @@ namespace Chatbot.Controllers
         public async Task<IActionResult> GetPdfResponse([FromBody] MessageRequest request)
         {
 
-            var title = new ChatbotService().CallOpenAPI_Title(request.Message);
-            var description = new ChatbotService().CallOpenAPI_Description(request.Message);
-            var result = await new ChatbotService().Call_StableDiffusion(request.Message);
+            byte[] pdfBytes = await GeneratePdfBytesFromPrompt(request.Message);
+
+
+            Response.Headers.Add("Content-Disposition", "attachment; filename=\"Book.pdf\"");
+            Response.ContentType = "application/pdf";
+
+            // Return the PDF file as a downloadable file
+            return File(pdfBytes, "application/pdf");
+
+        }
+
+        private async Task<byte[]> GeneratePdfBytesFromPrompt(string prompt)
+        {
+            var title = new ChatbotService().CallOpenAPI_Title(prompt);
+            var description = new ChatbotService().CallOpenAPI_Description(prompt);
+            var result = await new ChatbotService().Call_StableDiffusion(prompt);
 
             var jsonDocument = JsonDocument.Parse(result);
             var jsonObject = jsonDocument.RootElement;
@@ -107,22 +120,14 @@ namespace Chatbot.Controllers
             // Extract the image link
             var imageLink = jsonObject.GetProperty("output")[0].GetString();
 
-            var responseMsg = new PdfComponent()
-            {
-                Title = title,
-                Description = description
-            };
-
             ChromePdfRenderer renderer = new ChromePdfRenderer();
-            PdfDocument pdf = renderer.RenderHtmlAsPdf("<h1>"+title.ToString()+"</h1><br><img src=\""+imageLink+"\"><br>"+"<br><p>"+description.ToString()+"</p>");
-            pdf.SaveAs(@"D:\Image\test.pdf");
+            PdfDocument pdf = await renderer.RenderHtmlAsPdfAsync("<h1>" + title.ToString() + "</h1><br><img src=\"" + imageLink + "\"><br>" + "<br><p>" + description.ToString() + "</p>");
+            pdf.SaveAs(@"D:\Image\" + prompt + ".pdf");
 
-            if (responseMsg != null)
-                return Ok(responseMsg);
-            else
-                return BadRequest("Not found");
+            //var pdf = await renderer.RenderHtmlAsPdfAsync(htmlContent);
 
-
+            // Return the PDF as byte array
+            return pdf.BinaryData;
         }
     }
 }
