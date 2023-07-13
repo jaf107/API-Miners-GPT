@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend"
+    "\\authentication",
+    "\\frontend"
   ],
   "PreviewInSolutionExplorer": false
 }
