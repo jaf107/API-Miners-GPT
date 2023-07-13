@@ -193,7 +193,9 @@ function Main() {
     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center"
   >
     <AttachFileIcon className="mr-2" />
+    <span className="hidden md:block ">
     Upload File
+    </span>
   </Button>
 </label>
 <input
