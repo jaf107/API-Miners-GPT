@@ -20,7 +20,7 @@ namespace Chatbot.Controllers
         public async Task<IActionResult> GetTextResponse([FromBody]MessageRequest request)
         {
 
-            var result = new ChatbotService().CallOpenAPI(request.Message);
+            var result = new ChatbotService().CallOpenAPI_text(request.Message);
 
             var responseMsg = new AnswerResponse()
             {
@@ -60,7 +60,7 @@ namespace Chatbot.Controllers
 
                     // Call the GetTextResponse API with the extracted text
                 }
-                var result = new ChatbotService().CallOpenAPI(extractedText);
+                var result = new ChatbotService().CallOpenAPI_text(extractedText);
 
                 var responseMsg = new AnswerResponse()
                 {
