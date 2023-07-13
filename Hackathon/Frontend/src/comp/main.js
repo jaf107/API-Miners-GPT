@@ -121,24 +121,25 @@ function Main() {
       ]);
 
       try {
-        const filteredChat = chat.filter((entry) => entry.content !== null);
+        // const filteredChat = chat.filter((entry) => entry.content !== null);
 
-        const response = await axios.post("http://localhost:4000/chat", {
+        const response = await axios.post("https://localhost:7219/v1/api/prompt/text", {
           message: message,
-          prevChat: filteredChat,
         });
+        // prevChat: filteredChat,
 
-        const assistantMessage = response.data.data;
+          console.log(response)
+        // const assistantMessage = response.data.data;
 
-        setTimeout(() => {
-          setChat((prevChat) => [
-            ...prevChat,
-            {
-              role: "assistant",
-              content: assistantMessage,
-            },
-          ]);
-        }, 500); // Adjust the delay time as needed
+        // setTimeout(() => {
+        //   setChat((prevChat) => [
+        //     ...prevChat,
+        //     {
+        //       role: "assistant",
+        //       content: assistantMessage,
+        //     },
+        //   ]);
+        // }, 500); // Adjust the delay time as needed
       } catch (error) {
         console.error("An error occurred:", error);
       }
