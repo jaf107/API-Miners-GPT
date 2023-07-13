@@ -3,12 +3,19 @@ import Sidebar from "./comp/sideBar";
 import Main from "./comp/main";
 import { useState } from "react";
 import SideBarTop from "./comp/sideBarTop";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./comp/HomePage";
+import MarketPlace from "./comp/MarketPlace";
 
 function App() {
   return (
-    <div className="flex w-[100vw]">
-      <Main />
-    </div>
+ 
+    <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<HomePage/>} />
+      <Route path="/marketplace" element={<MarketPlace/>}/>
+    </Routes>
+  </BrowserRouter>
   );
 }
 

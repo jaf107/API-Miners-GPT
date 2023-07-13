@@ -4,6 +4,7 @@ import { TextField, Button, Modal } from "@material-ui/core";
 import { Send, Mic } from "@material-ui/icons";
 import Chat from "./chat";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
+import MagicIcon from "./MagicIcon";
 
 function Main() {
   const [message, setMessage] = useState("");
@@ -17,6 +18,7 @@ function Main() {
   const [isListening, setIsListening] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [generateBook,setGenerateBook] = useState(false);
   const [file, setFile] = useState(null);
 
   useEffect(() => {
@@ -87,6 +89,7 @@ function Main() {
 
   const handleSubmit = async () => {
     if (message !== "") {
+      let promptMessage = message;
       setChat((prevChat) => [
         ...prevChat,
         {
@@ -95,7 +98,6 @@ function Main() {
           image: null,
         },
       ]);
-      setMessage(""); // Clear the message field
 
       if (file) {
         const image = URL.createObjectURL(file);
@@ -108,13 +110,35 @@ function Main() {
           },
         ]);
         setFile(null); // Clear the file
-
         try {
           const imageData = new FormData();
           imageData.append("image", file);
-          const response = await axios.post("https://localhost:7100/api/v1/prompt/image", imageData);
+          const apiUrl = "https://localhost:7219/api/v1/prompt/image";
+          const response = await axios.post(apiUrl, imageData);
           const responseMessage = response.data.responseMessage;
-
+          setTimeout(() => {
+            setChat((prevChat) => [
+              ...prevChat,
+              {
+                role: "assistant",
+                content: responseMessage,
+                image: null,
+              },
+            ]);
+          }, 100);
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
+      } else if (generateBook) {
+        try {
+          const apiUrl = "https://localhost:7219/api/ebook";
+          const response = await axios.post(apiUrl, {
+            message: promptMessage,
+          });
+         
+          const responseMessage = response.data.responseMessage;
+    
+         setGenerateBook(false) // Clear the topic field
           setTimeout(() => {
             setChat((prevChat) => [
               ...prevChat,
@@ -130,12 +154,11 @@ function Main() {
         }
       } else {
         try {
-          const response = await axios.post("https://localhost:7100/api/v1/prompt/text", {
-            message: message,
+          const apiUrl = "https://localhost:7219/api/v1/prompt/text";
+          const response = await axios.post(apiUrl, {
+            message: promptMessage,
           });
-
           const responseMessage = response.data.responseMessage;
-
           setTimeout(() => {
             setChat((prevChat) => [
               ...prevChat,
@@ -150,6 +173,7 @@ function Main() {
           console.error("An error occurred:", error);
         }
       }
+      setMessage(""); // Clear the message field
     }
   };
 
@@ -157,13 +181,21 @@ function Main() {
     setIsListening(false);
     setShowModal(false);
   };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSubmit();
     }
   };
+
+ 
+
+  const createBook = () => {
+    handleSubmit();
+  };
+
   return (
-    <div className="w-full h-[100vh] max-h-[100vh] flex flex-col items-center justify-center bg-white text-black relative">
+    <div className="w-full h-[100vh] max-h-[100vh] pt-10 flex flex-col items-center justify-center bg-white text-black ">
       <div className="w-full h-[90%] flex flex-col items-center flex-grow overflow-scroll pt-[2rem]">
         {chat.length !== 0 &&
           chat.map((data, index) => {
@@ -187,7 +219,7 @@ function Main() {
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center text-sm"
               size="small"
             >
-              <AttachFileIcon className=" m-3" />
+              <AttachFileIcon className="m-3" />
             </Button>
           </label>
           <input
@@ -225,6 +257,15 @@ function Main() {
         >
           <Mic />
         </Button>
+        <span className="mx-2"></span>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={createBook}
+          size="small"
+        >
+          <MagicIcon />
+        </Button>
       </div>
 
       <Modal open={showModal} onClose={handleCloseModal}>
@@ -239,6 +280,8 @@ function Main() {
           </Button>
         </div>
       </Modal>
+
+      
     </div>
   );
 }
