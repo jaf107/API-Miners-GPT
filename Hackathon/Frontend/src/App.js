@@ -5,7 +5,7 @@ import { useState } from "react";
 import SideBarTop from "./comp/sideBarTop";
 
 function App() {
-  const [pdfText, setPdfText] = useState("");
+ 
   return (
     <div className="flex w-[100vw]">
     <div className="w-1/5">
