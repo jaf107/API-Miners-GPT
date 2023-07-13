@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenAI_API;
 using OpenAI_API.Completions;
 using DotNetEnv;
+using Chatbot.Models;
 
 namespace Chatbot.Controllers
 {
@@ -11,16 +12,16 @@ namespace Chatbot.Controllers
     public class ChatbotController : ControllerBase
     {
 
-        [HttpPost]
-        public async Task<IActionResult> GetResponse([FromBody]string prompt)
+        [HttpPost("/v1/api/prompt/text", Name= "GetTextResponse")]
+        public async Task<IActionResult> GetTextResponse([FromBody]MessageRequest request)
         {
             DotNetEnv.Env.Load();
-            string apikey = System.Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             string answer=string.Empty;
 
             var openai = new OpenAIAPI(apikey);
             CompletionRequest completion = new CompletionRequest();
-            completion.Prompt = prompt;
+            completion.Prompt = request.Message;
             completion.Model = OpenAI_API.Models.Model.DavinciText;
             completion.MaxTokens = 100;
 
@@ -33,7 +34,12 @@ namespace Chatbot.Controllers
                     answer = item.Text;
                 }
 
-                return Ok(answer);
+                var responseMsg = new AnswerResponse()
+                {
+                    ResponseMessage = answer.Trim()
+                };
+
+                return Ok(responseMsg);
             }
             else
                 return BadRequest("Not found");

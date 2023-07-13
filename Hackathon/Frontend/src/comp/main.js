@@ -86,7 +86,7 @@ function Main() {
         uploadedFile.type === "image/png"
       ) {
         const imageData = new FormData();
-      
+
         imageData.append("file", uploadedFile);
         console.log(imageData.get("file"));
 
@@ -129,22 +129,31 @@ function Main() {
       try {
         const filteredChat = chat.filter((entry) => entry.content !== null);
 
-        const response = await axios.post("http://localhost:4000/chat", {
-          message: message,
-          prevChat: filteredChat,
-        });
+        const response = await axios.post(
+          "https://localhost:7219/v1/api/prompt/text",
+          {
+            message: message,
+          }
+        );
 
-        const assistantMessage = response.data.data;
+        // const response = await axios.post("https://localhost:7219/v1/api/prompt/text", {
+        //   prevChat: filteredChat,
+        //   message: message,
+        // });
+
+        var responseMessage = response.data.responseMessage;
+        // console.log();
+        // const assistantMessage = response.data.data;
 
         setTimeout(() => {
           setChat((prevChat) => [
             ...prevChat,
             {
               role: "assistant",
-              content: assistantMessage,
+              content: responseMessage,
             },
           ]);
-        }, 500); // Adjust the delay time as needed
+        }, 100); // Adjust the delay time as needed
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -168,48 +177,58 @@ function Main() {
       </div>
 
       <div className="flex w-[70%] my-[2rem]">
-  <TextField
-    className="mr-2 text-sm"
-    label="Prompt"
-    variant="outlined"
-    onChange={(e) => handleChange(e.target.value)}
-    value={message}
-    fullWidth
-  />
-  <Button
-    variant="contained"
-    color="primary"
-    endIcon={<Send />}
-    onClick={handleSubmit}
-    size="small"
-  />
-  <Button
-    variant="contained"
-    color={isListening ? "secondary" : "primary"}
-    onClick={handleVoiceInput}
-    size="small"
-  >
-    <Mic />
-  </Button>
-  <label htmlFor="upload-input">
-    <Button
-      variant="contained"
-      component="span"
-      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center text-sm"
-      size="small"
-    >
-      <AttachFileIcon className="mr-2" />
-      <span className="hidden md:block">Upload File</span>
-    </Button>
-  </label>
-  <input
-    id="upload-input"
-    type="file"
-    accept="image/jpeg, image/png, text/plain"
-    className="hidden"
-    onChange={handleFileUpload}
-  />
-</div>
+      <div className="mr-3">
+      
+      <label htmlFor="upload-input">
+        <Button
+          variant="contained"
+          component="span"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center text-sm"
+          size="small"
+        >
+          <AttachFileIcon className=" m-3" />
+        </Button>
+      </label>
+      <input
+        id="upload-input"
+        type="file"
+        accept="image/jpeg, image/png, text/plain"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+      </div>
+      <div className="mr-3 w-full min-w-300px">
+      <TextField
+        className="mr-2 text-sm"
+        label="Prompt"
+        variant="outlined"
+        onChange={(e) => handleChange(e.target.value)}
+        value={message}
+        fullWidth
+      />
+      </div>
+        
+        <Button
+          variant="contained"
+          color="primary"
+          endIcon={<Send />}
+          onClick={handleSubmit}
+          size="small"
+          
+        />
+      
+        <span className="mx-2"></span>
+        
+        <Button
+          variant="contained"
+          color={isListening ? "secondary" : "primary"}
+          onClick={handleVoiceInput}
+          size="small"
+        >
+          <Mic />
+        </Button>
+       
+      </div>
 
       <Modal open={showModal} onClose={handleCloseModal}>
         <div className="w-[300px] h-[200px] bg-white text-black flex flex-col items-center justify-center absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2">
