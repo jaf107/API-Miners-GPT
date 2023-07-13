@@ -92,7 +92,7 @@ namespace Chatbot.Controllers
 
         }
 
-        [HttpPost("/api/v1/prompt/story", Name = "GetStoryResponse")]
+        [HttpPost("/api/v1/generate/story", Name = "GetStoryResponse")]
         public async Task<IActionResult> GetStoryResponse([FromBody] MessageRequest request)
         {
 
