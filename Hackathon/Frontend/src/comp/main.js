@@ -85,13 +85,22 @@ function Main() {
       if (uploadedFile.type === "image/jpeg" || uploadedFile.type === "image/png") {
         const imageData = new FormData();
         console.log(imageData);
-        imageData.append("file", uploadedFile);
+        imageData.append("image", uploadedFile);
 
         try {
-          const response = await axios.post("http://localhost:4000/ocr", imageData);
-          const extractedText = response.data.text;
+          const response = await axios.post("https://localhost:7219/api/v1/prompt/image", imageData);
+          const responseMessage = response.data.responseMessage;
 
-          setMessage((prevMessage) => prevMessage + extractedText);
+          setTimeout(() => {
+            setChat((prevChat) => [
+              ...prevChat,
+              {
+                role: "assistant",
+                content: responseMessage,
+              },
+            ]);
+          }, 100);
+          // setMessage((prevMessage) => prevMessage + extractedText);
         } catch (error) {
           console.error("An error occurred during OCR:", error);
         }
@@ -123,7 +132,7 @@ function Main() {
       try {
         const filteredChat = chat.filter((entry) => entry.content !== null);
 
-        const response = await axios.post("https://localhost:7219/v1/api/prompt/text", {
+        const response = await axios.post("https://localhost:7219/api/v1/prompt/text", {
           message: message,
         });
 
