@@ -5,6 +5,9 @@ using OpenAI_API.Completions;
 using DotNetEnv;
 using Chatbot.Models;
 using IronOcr;
+using Newtonsoft.Json;
+using System.Text;
+using Chatbot.Services;
 
 namespace Chatbot.Controllers
 {
@@ -16,39 +19,51 @@ namespace Chatbot.Controllers
         [HttpPost("/api/v1/prompt/text", Name= "GetTextResponse")]
         public async Task<IActionResult> GetTextResponse([FromBody]MessageRequest request)
         {
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-            string answer=string.Empty;
 
-            var openai = new OpenAIAPI(apikey);
-            CompletionRequest completion = new CompletionRequest();
-            completion.Prompt = request.Message;
-            completion.Model = OpenAI_API.Models.Model.DavinciText;
-            completion.MaxTokens = 100;
+            var result = new ChatbotService().CallOpenAPI(request.Message);
 
-            var result=openai.Completions.CreateCompletionsAsync(completion);
-
-            if (result != null)
+            var responseMsg = new AnswerResponse()
             {
-                foreach (var item in result.Result.Completions)
-                {
-                    answer = item.Text;
-                }
+                ResponseMessage = result.Trim()
+            };
 
-                var responseMsg = new AnswerResponse()
-                {
-                    ResponseMessage = answer.Trim()
-                };
-
+            if(result != null)
                 return Ok(responseMsg);
-            }
             else
                 return BadRequest("Not found");
+            //DotNetEnv.Env.Load();
+            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            //string answer=string.Empty;
+
+            //var openai = new OpenAIAPI(apikey);
+            //CompletionRequest completion = new CompletionRequest();
+            //completion.Prompt = request.Message;
+            //completion.Model = OpenAI_API.Models.Model.DavinciText;
+            //completion.MaxTokens = 100;
+
+            //var result=openai.Completions.CreateCompletionsAsync(completion);
+
+            //if (result != null)
+            //{
+            //    foreach (var item in result.Result.Completions)
+            //    {
+            //        answer = item.Text;
+            //    }
+
+            //    var responseMsg = new AnswerResponse()
+            //    {
+            //        ResponseMessage = answer.Trim()
+            //    };
+
+            //    return Ok(responseMsg);
+            //}
+            //else
+            //    return BadRequest("Not found");
 
         }
 
         [HttpPost("/api/v1/prompt/image", Name = "GetTextFromImage")]
-        public IActionResult GetTextFromImage([FromForm] IFormFile image)
+        public async Task<IActionResult> GetTextFromImage([FromForm] IFormFile image)
         {
             if (image != null && image.Length > 0)
             {
@@ -61,27 +76,33 @@ namespace Chatbot.Controllers
 
                 // Perform OCR on the uploaded image
                 var ocr = new IronTesseract();
+                string extractedText = string.Empty;
                 using (var input = new OcrInput(tempFilePath))
                 {
-                    var result = ocr.Read(input);
-                    string extractedText = result.Text;
-
-                    var responseText = new AnswerResponse()
-                    {
-                        ResponseMessage = extractedText
-                    };
-                    // Save the extracted text to a file
-                    var textFilePath = Path.Combine(Path.GetDirectoryName(tempFilePath), "extractedText.txt");
-                    result.SaveAsTextFile(textFilePath);
+                    var resultImage = ocr.Read(input);
+                    extractedText = resultImage.Text;
 
                     // Delete the temporary image file
                     System.IO.File.Delete(tempFilePath);
 
-                    return Ok(responseText);
+                    // Call the GetTextResponse API with the extracted text
                 }
+                var result = new ChatbotService().CallOpenAPI(extractedText);
+
+                var responseMsg = new AnswerResponse()
+                {
+                    ResponseMessage = result.Trim()
+                };
+
+                if (result != null)
+                    return Ok(responseMsg);
+                else
+                    return BadRequest("Not found");
+                
             }
 
-                return BadRequest("No image file was uploaded.");
-            }
+            return BadRequest("No image file was uploaded.");
         }
+
+    }
 }
