@@ -4,3 +4,4 @@
 *.vsidx
 /Hackathon/Chatbot/bin/
 /Hackathon/Chatbot/obj/
+Backend/.env
