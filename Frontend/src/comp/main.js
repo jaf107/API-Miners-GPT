@@ -157,7 +157,11 @@ function Main() {
     setIsListening(false);
     setShowModal(false);
   };
-
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
   return (
     <div className="w-full h-[100vh] max-h-[100vh] flex flex-col items-center justify-center bg-white text-black relative">
       <div className="w-full h-[90%] flex flex-col items-center flex-grow overflow-scroll pt-[2rem]">
@@ -201,6 +205,7 @@ function Main() {
             variant="outlined"
             onChange={(e) => handleChange(e.target.value)}
             value={message}
+            onKeyDown={handleKeyDown}
             fullWidth
           />
         </div>
