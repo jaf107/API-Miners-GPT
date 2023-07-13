@@ -112,7 +112,7 @@ function Main() {
         try {
           const imageData = new FormData();
           imageData.append("image", file);
-          const response = await axios.post("https://localhost:7219/api/v1/prompt/image", imageData);
+          const response = await axios.post("https://localhost:7100/api/v1/prompt/image", imageData);
           const responseMessage = response.data.responseMessage;
 
           setTimeout(() => {
@@ -130,7 +130,7 @@ function Main() {
         }
       } else {
         try {
-          const response = await axios.post("https://localhost:7219/api/v1/prompt/text", {
+          const response = await axios.post("https://localhost:7100/api/v1/prompt/text", {
             message: message,
           });
 
