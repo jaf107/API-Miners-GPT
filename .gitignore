@@ -2,4 +2,5 @@
 /Hackathon/Chatbot/.vs/
 /.vs/Hackathon/FileContentIndex
 *.vsidx
-/Hackathon/Chatbot/bin/Debug/net6.0/Chatbot.dll
+/Hackathon/Chatbot/bin/
+/Hackathon/Chatbot/obj/
