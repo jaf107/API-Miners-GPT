@@ -8,6 +8,8 @@ using IronOcr;
 using Newtonsoft.Json;
 using System.Text;
 using Chatbot.Services;
+using Backend.Models;
+using System.Text.Json;
 
 namespace Chatbot.Controllers
 {
@@ -20,7 +22,7 @@ namespace Chatbot.Controllers
         public async Task<IActionResult> GetTextResponse([FromBody]MessageRequest request)
         {
 
-            var result = new ChatbotService().CallOpenAPI(request.Message);
+            var result = new ChatbotService().CallOpenAPI_text(request.Message);
 
             var responseMsg = new AnswerResponse()
             {
@@ -60,7 +62,7 @@ namespace Chatbot.Controllers
 
                     // Call the GetTextResponse API with the extracted text
                 }
-                var result = new ChatbotService().CallOpenAPI(extractedText);
+                var result = new ChatbotService().CallOpenAPI_text(extractedText);
 
                 var responseMsg = new AnswerResponse()
                 {
@@ -77,5 +79,50 @@ namespace Chatbot.Controllers
             return BadRequest("No image file was uploaded.");
         }
 
+        [HttpPost("/api/v1/generate/image", Name ="GenerateImageFromPrompt")]
+        public async Task<IActionResult> GenerateImageFromPrompt([FromBody] MessageRequest request)
+        {
+            var result = await new ChatbotService().Call_StableDiffusion(request.Message);
+            var jsonObject = JsonConvert.DeserializeObject<dynamic>(result);
+
+
+            if (result != null)
+                return Ok(result);
+            else
+                return BadRequest("Not found");
+
+        }
+
+        [HttpPost("/api/v1/generate/story", Name = "GetStoryResponse")]
+        public async Task<IActionResult> GetStoryResponse([FromBody] MessageRequest request)
+        {
+
+            var title = new ChatbotService().CallOpenAPI_Title(request.Message);
+            var description = new ChatbotService().CallOpenAPI_Description(request.Message);
+            var result = await new ChatbotService().Call_StableDiffusion(request.Message);
+
+            var jsonDocument = JsonDocument.Parse(result);
+            var jsonObject = jsonDocument.RootElement;
+
+            // Extract the image link
+            var imageLink = jsonObject.GetProperty("output")[0].GetString();
+
+            var responseMsg = new PdfComponent()
+            {
+                Title = title,
+                Description = description
+            };
+
+            ChromePdfRenderer renderer = new ChromePdfRenderer();
+            PdfDocument pdf = renderer.RenderHtmlAsPdf("<h1>"+title.ToString()+"</h1><br><img src=\""+imageLink+"\"><br>"+"<br><p>"+description.ToString()+"</p>");
+            pdf.SaveAs(@"D:\Image\test.pdf");
+
+            if (responseMsg != null)
+                return Ok(responseMsg);
+            else
+                return BadRequest("Not found");
+
+
+        }
     }
 }
