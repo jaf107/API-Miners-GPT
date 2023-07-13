@@ -8,7 +8,7 @@ using IronOcr;
 using Newtonsoft.Json;
 using System.Text;
 using Chatbot.Services;
-
+using Backend.Models;
 
 namespace Chatbot.Controllers
 {
@@ -92,5 +92,25 @@ namespace Chatbot.Controllers
 
         }
 
+        [HttpPost("/api/v1/prompt/story", Name = "GetStoryResponse")]
+        public async Task<IActionResult> GetStoryResponse([FromBody] MessageRequest request)
+        {
+
+            var title = new ChatbotService().CallOpenAPI_Title(request.Message);
+            var description = new ChatbotService().CallOpenAPI_Title(request.Message);
+
+            var responseMsg = new PdfComponent()
+            {
+                Title = title,
+                Description = description
+            };
+
+            if (responseMsg != null)
+                return Ok(responseMsg);
+            else
+                return BadRequest("Not found");
+
+
+        }
     }
 }
