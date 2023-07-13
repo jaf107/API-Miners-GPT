@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Play, Pause } from "react-feather";
 
-function Chat({ role, content }) {
+function Chat({ role, content, url }) {
   const [displayedContent, setDisplayedContent] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
     let typingTimeout;
-
     let currentIndex = 0;
-
     const typingDelay = role === "assistant" ? 10 : 0;
 
     const typeCharacter = () => {
@@ -69,6 +67,7 @@ function Chat({ role, content }) {
           >
             {displayedContent}
           </pre>
+          {url && <img src={url} className="h-[200px] flex" alt="Image Preview" />}
         </div>
         <button className="ml-2 flex" onClick={speakContent}>
           {isSpeaking ? <Pause size={20} /> : <Play size={20} />}
