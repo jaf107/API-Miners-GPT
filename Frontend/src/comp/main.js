@@ -3,16 +3,15 @@ import axios from "axios";
 import { TextField, Button, Modal } from "@material-ui/core";
 import { Send, Mic } from "@material-ui/icons";
 import Chat from "./chat";
-import { Image } from "react-feather";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 
-// ...
 function Main() {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([
     {
       role: "system",
       content: "How can I help you today?",
+      image: null,
     },
   ]);
   const [isListening, setIsListening] = useState(false);
@@ -77,47 +76,12 @@ function Main() {
     }
   };
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = (event) => {
     const uploadedFile = event.target.files[0];
 
     if (uploadedFile) {
-      if (
-        uploadedFile.type === "image/jpeg" ||
-        uploadedFile.type === "image/png"
-      ) {
-        const imageData = new FormData();
-        console.log(imageData);
-        imageData.append("image", uploadedFile);
-
-        try {
-          const response = await axios.post("https://localhost:7100/api/v1/prompt/image", imageData);
-          const responseMessage = response.data.responseMessage;
-
-          setTimeout(() => {
-            setChat((prevChat) => [
-              ...prevChat,
-              {
-                role: "assistant",
-                content: responseMessage,
-              },
-            ]);
-          }, 100);
-          // setMessage((prevMessage) => prevMessage + extractedText);
-        } catch (error) {
-          console.error("An error occurred during OCR:", error);
-        }
-      } else if (uploadedFile.type === "text/plain") {
-        const fileReader = new FileReader();
-
-        fileReader.onload = (e) => {
-          const textContent = e.target.result;
-          setMessage((prevMessage) => prevMessage + textContent);
-        };
-
-        fileReader.readAsText(uploadedFile);
-      } else {
-        console.log("Unsupported file format");
-      }
+      setFile(uploadedFile);
+      setMessage("Image Selected"); // Update the message to "Image Selected"
     }
   };
 
@@ -128,39 +92,64 @@ function Main() {
         {
           role: "user",
           content: message,
+          image: null,
         },
       ]);
+      setMessage(""); // Clear the message field
 
-      try {
-        const filteredChat = chat.filter((entry) => entry.content !== null);
+      if (file) {
+        const image = URL.createObjectURL(file);
+        setChat((prevChat) => [
+          ...prevChat,
+          {
+            role: "user",
+            content: "",
+            image: image,
+          },
+        ]);
+        setFile(null); // Clear the file
 
-        const response = await axios.post("https://localhost:7100/api/v1/prompt/text", {
-          message: message,
-        });
+        try {
+          const imageData = new FormData();
+          imageData.append("image", file);
+          const response = await axios.post("https://localhost:7219/api/v1/prompt/image", imageData);
+          const responseMessage = response.data.responseMessage;
 
-        // const response = await axios.post("https://localhost:7219/v1/api/prompt/text", {
-        //   prevChat: filteredChat,
-        //   message: message,
-        // });
+          setTimeout(() => {
+            setChat((prevChat) => [
+              ...prevChat,
+              {
+                role: "assistant",
+                content: responseMessage,
+                image: null,
+              },
+            ]);
+          }, 100);
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
+      } else {
+        try {
+          const response = await axios.post("https://localhost:7219/api/v1/prompt/text", {
+            message: message,
+          });
 
-        var responseMessage = response.data.responseMessage;
-        // console.log();
-        // const assistantMessage = response.data.data;
+          const responseMessage = response.data.responseMessage;
 
-        setTimeout(() => {
-          setChat((prevChat) => [
-            ...prevChat,
-            {
-              role: "assistant",
-              content: responseMessage,
-            },
-          ]);
-        }, 100); // Adjust the delay time as needed
-      } catch (error) {
-        console.error("An error occurred:", error);
+          setTimeout(() => {
+            setChat((prevChat) => [
+              ...prevChat,
+              {
+                role: "assistant",
+                content: responseMessage,
+                image: null,
+              },
+            ]);
+          }, 100);
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
       }
-
-      setMessage("");
     }
   };
 
@@ -174,53 +163,55 @@ function Main() {
       <div className="w-full h-[90%] flex flex-col items-center flex-grow overflow-scroll pt-[2rem]">
         {chat.length !== 0 &&
           chat.map((data, index) => {
-            return <Chat role={data.role} content={data.content} />;
+            return (
+              <Chat
+                key={index}
+                role={data.role}
+                content={data.content}
+                url={data.image}
+              />
+            );
           })}
       </div>
 
       <div className="flex w-[70%] my-[2rem]">
-      <div className="mr-3">
-      
-      <label htmlFor="upload-input">
-        <Button
-          variant="contained"
-          component="span"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center text-sm"
-          size="small"
-        >
-          <AttachFileIcon className=" m-3" />
-        </Button>
-      </label>
-      <input
-        id="upload-input"
-        type="file"
-        accept="image/jpeg, image/png, text/plain"
-        className="hidden"
-        onChange={handleFileUpload}
-      />
-      </div>
-      <div className="mr-3 w-full min-w-300px">
-      <TextField
-        className="mr-2 text-sm"
-        label="Prompt"
-        variant="outlined"
-        onChange={(e) => handleChange(e.target.value)}
-        value={message}
-        fullWidth
-      />
-      </div>
-        
+        <div className="mr-3">
+          <label htmlFor="upload-input">
+            <Button
+              variant="contained"
+              component="span"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center text-sm"
+              size="small"
+            >
+              <AttachFileIcon className=" m-3" />
+            </Button>
+          </label>
+          <input
+            id="upload-input"
+            type="file"
+            accept="image/jpeg, image/png, text/plain"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+        </div>
+        <div className="mr-3 w-full min-w-300px">
+          <TextField
+            className="mr-2 text-sm"
+            label="Prompt"
+            variant="outlined"
+            onChange={(e) => handleChange(e.target.value)}
+            value={message}
+            fullWidth
+          />
+        </div>
         <Button
           variant="contained"
           color="primary"
           endIcon={<Send />}
           onClick={handleSubmit}
           size="small"
-          
         />
-      
         <span className="mx-2"></span>
-        
         <Button
           variant="contained"
           color={isListening ? "secondary" : "primary"}
@@ -229,7 +220,6 @@ function Main() {
         >
           <Mic />
         </Button>
-       
       </div>
 
       <Modal open={showModal} onClose={handleCloseModal}>
