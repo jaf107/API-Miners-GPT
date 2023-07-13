@@ -122,8 +122,5 @@ namespace Chatbot.Services
                 return string.Empty;
             }
         }
-        
-        
-
     }
 }
