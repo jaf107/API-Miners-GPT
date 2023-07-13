@@ -93,8 +93,8 @@ namespace Chatbot.Controllers
 
         }
 
-        [HttpPost("/api/v1/generate/story", Name = "GetStoryResponse")]
-        public async Task<IActionResult> GetStoryResponse([FromBody] MessageRequest request)
+        [HttpPost("/api/v1/generate/pdf", Name = "GetPdfResponse")]
+        public async Task<IActionResult> GetPdfResponse([FromBody] MessageRequest request)
         {
 
             var title = new ChatbotService().CallOpenAPI_Title(request.Message);
