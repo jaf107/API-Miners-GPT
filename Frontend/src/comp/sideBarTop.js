@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Sidebar } from 'react-feather';
 import SideBarMain from './sideBar';
+import Main from './main';
 
 function SideBarTop() {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -12,7 +13,7 @@ function SideBarTop() {
   return (
     <div>
       {showSidebar && (
-        <div className='flex  bg-black text-white'>
+        <div className='md:flex  bg-black text-white hidden '>
           <button
             className='pl-2 pr-10 py-1 border-2 mx-6 my-4 border-white flex rounded-sm'
             onClick={toggleSidebar}
@@ -34,6 +35,7 @@ function SideBarTop() {
       <div className='hidden md:block'>
       {showSidebar && <SideBarMain />}
       </div>
+      
     </div>
   );
 }
