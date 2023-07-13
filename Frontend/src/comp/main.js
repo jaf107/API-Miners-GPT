@@ -18,7 +18,6 @@ function Main() {
   const [isListening, setIsListening] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [generateBook,setGenerateBook] = useState(false);
   const [file, setFile] = useState(null);
 
   useEffect(() => {
@@ -113,7 +112,7 @@ function Main() {
         try {
           const imageData = new FormData();
           imageData.append("image", file);
-          const apiUrl = "https://localhost:7219/api/v1/prompt/image";
+          const apiUrl = "https://localhost:7100/api/v1/prompt/image";
           const response = await axios.post(apiUrl, imageData);
           const responseMessage = response.data.responseMessage;
           setTimeout(() => {
@@ -129,32 +128,9 @@ function Main() {
         } catch (error) {
           console.error("An error occurred:", error);
         }
-      } else if (generateBook) {
+      }  else {
         try {
-          const apiUrl = "https://localhost:7219/api/ebook";
-          const response = await axios.post(apiUrl, {
-            message: promptMessage,
-          });
-         
-          const responseMessage = response.data.responseMessage;
-    
-         setGenerateBook(false) // Clear the topic field
-          setTimeout(() => {
-            setChat((prevChat) => [
-              ...prevChat,
-              {
-                role: "assistant",
-                content: responseMessage,
-                image: null,
-              },
-            ]);
-          }, 100);
-        } catch (error) {
-          console.error("An error occurred:", error);
-        }
-      } else {
-        try {
-          const apiUrl = "https://localhost:7219/api/v1/prompt/text";
+          const apiUrl = "https://localhost:7100/api/v1/prompt/text";
           const response = await axios.post(apiUrl, {
             message: promptMessage,
           });
@@ -190,12 +166,43 @@ function Main() {
 
  
 
-  const createBook = () => {
-    handleSubmit();
+  const createPdfBook = async () => {
+    if (message !== "") {
+      let promptMessage = message;
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          role: "user",
+          content: message,
+          image: null,
+        },
+      ]);
+    
+      try {
+        const apiUrl = "https://localhost:7100/api/ebook";
+        const response = await axios.post(apiUrl, {
+          message: promptMessage,
+        });
+        const responseMessage = response.data.responseMessage;
+        setTimeout(() => {
+          setChat((prevChat) => [
+            ...prevChat,
+            {
+              role: "assistant",
+              content: responseMessage,
+              image: null,
+            },
+          ]);
+        }, 100);
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+      setMessage(""); // Clear the message field
+    }
   };
 
   return (
-    <div className="w-full h-[100vh] max-h-[100vh] pt-10 flex flex-col items-center justify-center bg-white text-black ">
+    <div className="w-full h-[100vh] max-h-[100vh]  flex flex-col items-center justify-center bg-white text-black relative">
       <div className="w-full h-[90%] flex flex-col items-center flex-grow overflow-scroll pt-[2rem]">
         {chat.length !== 0 &&
           chat.map((data, index) => {
@@ -210,7 +217,7 @@ function Main() {
           })}
       </div>
 
-      <div className="flex w-[70%] my-[2rem]">
+      <div className="flex w-[70%] my-[2rem] absolute bottom-[45px] sticky opacity-90 z-100">
         <div className="mr-3">
           <label htmlFor="upload-input">
             <Button
@@ -261,7 +268,7 @@ function Main() {
         <Button
           variant="contained"
           color="primary"
-          onClick={createBook}
+          onClick={createPdfBook}
           size="small"
         >
           <MagicIcon />
