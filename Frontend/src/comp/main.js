@@ -134,6 +134,7 @@ function Main() {
           const apiUrl = "https://localhost:7100/api/v1/prompt/text";
           const response = await axios.post(apiUrl, {
             message: promptMessage,
+            previousChat: chat,
           });
           const responseMessage = response.data.responseMessage;
           setTimeout(() => {
@@ -185,8 +186,10 @@ function Main() {
 
         const response = await axios.post(apiUrl, {
           message: promptMessage,
+          previousChat: chat,
         }, {
           responseType: 'blob' // Specify the response type as blob
+
         });
   
         // Create a temporary URL for the blob response
@@ -204,24 +207,7 @@ function Main() {
             },
           ]);
         }, 100);
-        // const apiUrl = "https://localhost:7100/api/v1/generate/pdf";
         
-        // const response = await axios.post(apiUrl, {
-        //   message: promptMessage,
-        // });
-        // console.log(response);
-        // const responseMessage = response.data.responseMessage;
-        // setTimeout(() => {
-        //   setChat((prevChat) => [
-        //     ...prevChat,
-        //     {
-        //       role: "assistant",
-        //       content: "The PDF is being generated.Please Wait",
-        //       image: null,
-        //       link: responseMessage
-        //     },
-        //   ]);
-        // }, 100);
       } catch (error) {
         console.error("An error occurred:", error);
       }

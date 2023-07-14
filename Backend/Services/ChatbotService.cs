@@ -41,6 +41,44 @@ namespace Chatbot.Services
             return answer;
         }
 
+        public string CallOpenAPI_chat(List<ChatMessage> previousChats)
+        {
+            DotNetEnv.Env.Load();
+            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string answer = string.Empty;
+
+            StringBuilder promptBuilder = new StringBuilder("");
+            foreach (var chat in previousChats)
+            {
+                if (chat.Role == "user")
+                {
+                    promptBuilder.AppendLine();
+                    promptBuilder.AppendLine("User: " + chat.Content);
+                }
+                else if (chat.Role == "assistant")
+                {
+                    promptBuilder.AppendLine();
+                    promptBuilder.AppendLine("Assistant: " + chat.Content);
+                }
+            }
+
+            var openai = new OpenAIAPI(apikey);
+            CompletionRequest completion = new CompletionRequest();
+            completion.Prompt = promptBuilder.ToString();
+            completion.Model = OpenAI_API.Models.Model.DavinciText;
+            completion.MaxTokens = 100;
+
+            var result = openai.Completions.CreateCompletionsAsync(completion);
+            if (result != null)
+            {
+                foreach (var item in result.Result.Completions)
+                {
+                    answer = item.Text;
+                }
+            }
+            return answer;
+        }
+
         public string CallOpenAPI_Title(string prompt)
         {
             
