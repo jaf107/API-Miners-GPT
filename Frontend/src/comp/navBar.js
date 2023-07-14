@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiSearch, FiHeart, FiShoppingCart } from "react-icons/fi";
+import { FiSearch, FiHeart, FiShoppingCart,FiUser } from "react-icons/fi";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -10,13 +10,20 @@ const navigation = [
 
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const token = localStorage.getItem("token");
+
+  const handleLogout = () => {
+    // Implement the logic to clear the token from localStorage and perform logout actions
+    localStorage.removeItem("token");
+    // Additional logout logic...
+  };
 
   return (
-    <header className="z-90 bg-white shadow-md  inset-x-0 top-0 z-50 sticky ">
+    <header className="z-90 bg-white shadow-md  inset-x-0 top-0 z-50 sticky">
       <nav className="flex items-center justify-between p-4 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
-            <h1 className="font-bold text-md hover:text-lg">API MINERS</h1>
+            <h1 className="font-bold text-xl hover:text-xxl bg-[#5046E5] text-white px-2 rounded-md ">API MINERS</h1>
           </a>
         </div>
         <div className="flex lg:hidden">
@@ -37,9 +44,20 @@ const NavBar = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="#" className="text-md font-semibold leading-6 text-white bg-[#5046E5] p-2 rounded-sm">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        {token ? (
+          <button
+            onClick={handleLogout}
+            className="text-md flex font-semibold leading-6 px-3 text-white bg-[#5046E5] p-2 rounded-sm"
+          >
+          <FiUser className="mr-2 mt-1" />  Profile
+          </button>
+        ) : (
+          <a href="login" className="text-md font-semibold leading-6 text-white bg-[#5046E5] p-2 rounded-sm">
             Log in <span aria-hidden="true">&rarr;</span>
           </a>
+        )}
+      </div>
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
