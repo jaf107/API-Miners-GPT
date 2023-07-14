@@ -79,6 +79,32 @@ namespace Chatbot.Services
             return answer;
         }
 
+        public string CallOpenAPI_Sections(string prompt)
+        {
+
+            //string query = "I need a 3 Sections for the '" + prompt +" ' separated by comma";
+            string query = "just give me the titile of 3 sections of the prompt" + prompt + ", each separated by comma";
+            DotNetEnv.Env.Load();
+            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string answer = string.Empty;
+
+            var openai = new OpenAIAPI(apikey);
+            CompletionRequest completion = new CompletionRequest();
+            completion.Prompt = query;
+            completion.Model = OpenAI_API.Models.Model.DavinciText;
+            completion.MaxTokens = 100;
+
+            var result = openai.Completions.CreateCompletionsAsync(completion);
+            if (result != null)
+            {
+                foreach (var item in result.Result.Completions)
+                {
+                    answer = item.Text;
+                }
+            }
+            return answer;
+        }
+
         public string CallOpenAPI_Title(string prompt)
         {
             
