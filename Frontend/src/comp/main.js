@@ -181,7 +181,7 @@ function Main() {
       ]);
     
       try {
-        const apiUrl = "https://localhost:7100/api/ebook";
+        const apiUrl = "https://localhost:7100/api/v1/generate/pdf";
         const response = await axios.post(apiUrl, {
           message: promptMessage,
         });
