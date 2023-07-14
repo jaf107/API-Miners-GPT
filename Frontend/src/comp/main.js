@@ -179,24 +179,49 @@ function Main() {
           
         },
       ]);
-    
+      console.log(promptMessage);
       try {
         const apiUrl = "https://localhost:7100/api/v1/generate/pdf";
+
         const response = await axios.post(apiUrl, {
           message: promptMessage,
+        }, {
+          responseType: 'blob' // Specify the response type as blob
         });
-        const responseMessage = response.data.responseMessage;
+  
+        // Create a temporary URL for the blob response
+        const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+  
+        // const responseMessage = response.data.responseMessage;
         setTimeout(() => {
           setChat((prevChat) => [
             ...prevChat,
             {
               role: "assistant",
-              content: responseMessage,
+              content: "The PDF is being generated. Please wait.",
               image: null,
-              link: responseMessage
+              link: url // Assign the temporary URL to the link property
             },
           ]);
         }, 100);
+        // const apiUrl = "https://localhost:7100/api/v1/generate/pdf";
+        
+        // const response = await axios.post(apiUrl, {
+        //   message: promptMessage,
+        // });
+        // console.log(response);
+        // const responseMessage = response.data.responseMessage;
+        // setTimeout(() => {
+        //   setChat((prevChat) => [
+        //     ...prevChat,
+        //     {
+        //       role: "assistant",
+        //       content: "The PDF is being generated.Please Wait",
+        //       image: null,
+        //       link: responseMessage
+        //     },
+        //   ]);
+        // }, 100);
       } catch (error) {
         console.error("An error occurred:", error);
       }
