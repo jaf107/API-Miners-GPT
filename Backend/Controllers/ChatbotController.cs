@@ -18,8 +18,8 @@ namespace Chatbot.Controllers
     public class ChatbotController : ControllerBase
     {
 
-        [HttpPost("/api/v1/prompt/text", Name= "GetTextResponse")]
-        public async Task<IActionResult> GetTextResponse([FromBody]MessageRequest request)
+        [HttpPost("/api/v1/prompt/text", Name= "GetTextResponseForRequest")]
+        public async Task<IActionResult> GetTextResponseForRequest([FromBody]MessageRequest request)
         {
 
             var result = new ChatbotService().CallOpenAPI_text(request.Message);
@@ -34,6 +34,24 @@ namespace Chatbot.Controllers
             else
                 return BadRequest("Not found");
             
+
+        }
+        [HttpPost("/api/v2/prompt/text", Name = "GetTextResponseForChats")]
+        public async Task<IActionResult> GetTextResponseForChats([FromBody] List<ChatMessage> chatMessages)
+        {
+
+            var result = new ChatbotService().CallOpenAPI_chat(chatMessages);
+
+            var responseMsg = new AnswerResponse()
+            {
+                ResponseMessage = result.Trim()
+            };
+
+            if (result != null)
+                return Ok(responseMsg);
+            else
+                return BadRequest("Not found");
+
 
         }
 
