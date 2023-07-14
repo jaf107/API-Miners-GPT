@@ -8,14 +8,14 @@ import axios from 'axios';
 const LogIn = () => {
   const history = useNavigate();
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Email is required'),
+    username: Yup.string().required('User Name is required'),
     password: Yup.string().required('Password is required'),
   });
 
   const handleSubmit = async (values) => {
     try {
       const response = await axios.post('https://localhost:7100/user/login', {
-        email: values.email,
+        username: values.username,
         password: values.password,
       });
       const token = response.data.token;
@@ -44,7 +44,7 @@ const LogIn = () => {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <Formik
             initialValues={{
-              email: '',
+              username: '',
               password: '',
             }}
             validationSchema={validationSchema}
@@ -53,17 +53,17 @@ const LogIn = () => {
             <Form className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 flex">
-                  Email address
+                  User Name
                 </label>
                 <div className="mt-2">
                   <Field
-                    type="email"
-                    id="email"
-                    name="email"
+                    type="text"
+                    id="text"
+                    name="userNAME"
                     autoComplete="email"
                     className="block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
-                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+                  <ErrorMessage name="username" component="div" className="text-red-500 text-sm mt-1" />
                 </div>
               </div>
 

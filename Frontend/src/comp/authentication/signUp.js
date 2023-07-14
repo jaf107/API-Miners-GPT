@@ -7,17 +7,17 @@ import axios from 'axios';
 const SignUp = () => {
   const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Email is required'),
+    username: Yup.string().required('User Name is required'),
     password: Yup.string().required('Password is required'),
   });
 
   const handleSubmit = async (values) => {
     try {
       const response = await axios.post('https://localhost:7100/user/signup', {
-        email: values.email,
+        username: values.username,
         password: values.password,
       });
-      console.log('Sign up successful:', values.email);
+      console.log('Sign up successful:', values.username);
       toast.success('Sign up successful');
       navigate('/login');
     } catch (error) {
@@ -42,7 +42,7 @@ const SignUp = () => {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <Formik
             initialValues={{
-              email: '',
+              username: '',
               password: '',
             }}
             validationSchema={validationSchema}
@@ -50,18 +50,18 @@ const SignUp = () => {
           >
           <Form className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 flex">
-              Email address
+            <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900 flex">
+              User Name 
             </label>
             <div className="mt-2">
               <Field
-                type="email"
-                id="email"
-                name="email"
-                autoComplete="email"
+                type="username"
+                id="username"
+                name="username"
+                autoComplete="username"
                 className="block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
-              <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+              <ErrorMessage name="username" component="div" className="text-red-500 text-sm mt-1" />
             </div>
           </div>
 
