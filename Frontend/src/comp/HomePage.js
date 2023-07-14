@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
   const navigate = useNavigate();
-
+  localStorage.removeItem("token")
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
