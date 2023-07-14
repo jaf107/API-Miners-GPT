@@ -36,6 +36,7 @@ namespace Chatbot.Controllers
             
 
         }
+        
         [HttpPost("/api/v2/prompt/text", Name = "GetTextResponseForChats")]
         public async Task<IActionResult> GetTextResponseForChats([FromBody] List<ChatMessage> chatMessages)
         {
