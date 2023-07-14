@@ -13,6 +13,7 @@ function Main() {
       role: "system",
       content: "How can I help you today?",
       image: null,
+      link:"https://docs.google.com/document/d/143VCrp1FmGF0nu-icyJrneWINzSNostBngTj6F4PR88/export?/format-pdf"
     },
   ]);
   const [isListening, setIsListening] = useState(false);
@@ -175,6 +176,7 @@ function Main() {
           role: "user",
           content: message,
           image: null,
+          
         },
       ]);
     
@@ -191,6 +193,7 @@ function Main() {
               role: "assistant",
               content: responseMessage,
               image: null,
+              link: responseMessage
             },
           ]);
         }, 100);
@@ -212,6 +215,7 @@ function Main() {
                 role={data.role}
                 content={data.content}
                 url={data.image}
+                link={data.link}
               />
             );
           })}

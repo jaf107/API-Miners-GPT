@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Play, Pause } from "react-feather";
+import { Play, Pause,Download } from "react-feather";
 
-function Chat({ role, content, url }) {
+function Chat({ role, content, url,link }) {
   const [displayedContent, setDisplayedContent] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -72,6 +72,14 @@ function Chat({ role, content, url }) {
         <button className="ml-2 flex" onClick={speakContent}>
           {isSpeaking ? <Pause size={20} /> : <Play size={20} />}
         </button>
+        {link && (
+          <a href={link} download>
+            <button className="">
+              <Download />
+            </button>
+          </a>
+        )}
+        
       </div>
     </div>
   );
