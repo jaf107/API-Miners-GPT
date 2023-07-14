@@ -4,15 +4,7 @@ import NavBar from './navBar';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
-  const navigate = useNavigate();
-  localStorage.removeItem("token")
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
-
+ 
   return (
     <>
       <NavBar />
