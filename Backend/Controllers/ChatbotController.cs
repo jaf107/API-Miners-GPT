@@ -36,6 +36,7 @@ namespace Chatbot.Controllers
             
 
         }
+        
         [HttpPost("/api/v2/prompt/text", Name = "GetTextResponseForChats")]
         public async Task<IActionResult> GetTextResponseForChats([FromBody] List<ChatMessage> chatMessages)
         {
@@ -124,6 +125,46 @@ namespace Chatbot.Controllers
             // Return the PDF file as a downloadable file
             return File(pdfBytes, "application/pdf");
 
+        }
+
+        [HttpPost("/api/v2/generate/pdf", Name = "GetPdfResponseV2")]
+        public async Task<IActionResult> GetPdfResponseV2([FromBody] MessageRequest request)
+        {
+            var sectionString = new ChatbotService().CallOpenAPI_Sections(request.Message);
+            string[] sections = sectionString.Split(',');
+            var htmlToRender = new StringBuilder(); // Use StringBuilder for efficient string concatenation
+            foreach (string s in sections)
+            {
+                var title = new ChatbotService().CallOpenAPI_Title(s);
+                var description = new ChatbotService().CallOpenAPI_Description(s);
+                var result = await new ChatbotService().Call_StableDiffusion(s);
+
+                var jsonDocument = JsonDocument.Parse(result);
+                var jsonObject = jsonDocument.RootElement;
+
+                // Extract the image link
+                var imageLink = jsonObject.GetProperty("output")[0].GetString();
+
+                htmlToRender.Append("<h1>").Append(title).Append("</h1><br>");
+                htmlToRender.Append("<img src=\"").Append(imageLink).Append("\"><br><br>");
+                htmlToRender.Append("<p>").Append(description).Append("</p>");
+                await Task.Delay(1000); // Use asynchronous delay
+
+            }
+            ChromePdfRenderer renderer = new ChromePdfRenderer();
+            PdfDocument pdf = await renderer.RenderHtmlAsPdfAsync(htmlToRender.ToString());
+
+            var filePath = Path.Combine("D:", "Image", request.Message + ".pdf");
+            pdf.SaveAs(filePath);
+
+            byte[] pdfBytes = await GeneratePdfBytesFromPrompt(request.Message);
+
+            // Set response headers
+            Response.Headers.Add("Content-Disposition", "attachment; filename=\"Book.pdf\"");
+            Response.ContentType = "application/pdf";
+
+            // Return the PDF file as a downloadable file
+            return File(pdfBytes, "application/pdf");
         }
 
         private async Task<byte[]> GeneratePdfBytesFromPrompt(string prompt)

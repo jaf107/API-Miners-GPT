@@ -186,8 +186,9 @@ function Main() {
 
         const response = await axios.post(apiUrl, {
           message: promptMessage,
-          previousChat: chat,
-        }, {
+        }, 
+        // previousChat: chat,
+        {
           responseType: 'blob' // Specify the response type as blob
 
         });
