@@ -1,3 +1,4 @@
+using Backend.Constants;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add Constants
+ApiKeyConstant.OpenAI_Key = builder.Configuration.GetSection("OpenAI_Key").Value;
+ApiKeyConstant.StablleDiffusion_Key = builder.Configuration.GetSection("StablleDiffusion_Key").Value;
 
 // Add CORS
 builder.Services.AddCors(options =>

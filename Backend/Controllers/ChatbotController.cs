@@ -98,19 +98,19 @@ namespace Chatbot.Controllers
             return BadRequest("No image file was uploaded.");
         }
 
-        [HttpPost("/api/v1/generate/image", Name ="GenerateImageFromPrompt")]
-        public async Task<IActionResult> GenerateImageFromPrompt([FromBody] MessageRequest request)
-        {
-            var result = await new ChatbotService().Call_StableDiffusion(request.Message);
-            var jsonObject = JsonConvert.DeserializeObject<dynamic>(result);
+        //[HttpPost("/api/v1/generate/image", Name ="GenerateImageFromPrompt")]
+        //private async Task<IActionResult> GenerateImageFromPrompt([FromBody] MessageRequest request)
+        //{
+        //    var result = await new ChatbotService().Call_StableDiffusion(request.Message);
+        //    var jsonObject = JsonConvert.DeserializeObject<dynamic>(result);
 
 
-            if (result != null)
-                return Ok(result);
-            else
-                return BadRequest("Not found");
+        //    if (result != null)
+        //        return Ok(result);
+        //    else
+        //        return BadRequest("Not found");
 
-        }
+        //}
 
         [HttpPost("/api/v1/generate/pdf", Name = "GetPdfResponse")]
         public async Task<IActionResult> GetPdfResponse([FromBody] MessageRequest request)
@@ -133,24 +133,25 @@ namespace Chatbot.Controllers
             var sectionString = new ChatbotService().CallOpenAPI_Sections(request.Message);
             string[] sections = sectionString.Split(',');
             var htmlToRender = new StringBuilder(); // Use StringBuilder for efficient string concatenation
-            foreach (string s in sections)
-            {
-                var title = new ChatbotService().CallOpenAPI_Title(s);
-                var description = new ChatbotService().CallOpenAPI_Description(s);
-                var result = await new ChatbotService().Call_StableDiffusion(s);
+            //foreach (string s in sections)
+            //{
+            //    var title = new ChatbotService().CallOpenAPI_Title(s);
+            //    var description = new ChatbotService().CallOpenAPI_Description(s);
+            //    var result = await new ChatbotService().Call_StableDiffusion(s);
 
-                var jsonDocument = JsonDocument.Parse(result);
-                var jsonObject = jsonDocument.RootElement;
+            //    var jsonDocument = JsonDocument.Parse(result);
+            //    var jsonObject = jsonDocument.RootElement;
 
-                // Extract the image link
-                var imageLink = jsonObject.GetProperty("output")[0].GetString();
+            //    // Extract the image link
+            //    var imageLink = jsonObject.GetProperty("output")[0].GetString();
 
-                htmlToRender.Append("<h1>").Append(title).Append("</h1><br>");
-                htmlToRender.Append("<img src=\"").Append(imageLink).Append("\"><br><br>");
-                htmlToRender.Append("<p>").Append(description).Append("</p>");
-                await Task.Delay(1000); // Use asynchronous delay
 
-            }
+            //    htmlToRender.Append("<h1>").Append(title).Append("</h1><br>");
+            //    htmlToRender.Append("<img src=\"").Append(imageLink).Append("\"><br><br>");
+            //    htmlToRender.Append("<p>").Append(description).Append("</p>");
+            //    await Task.Delay(1000); // Use asynchronous delay
+
+            //}
             ChromePdfRenderer renderer = new ChromePdfRenderer();
             PdfDocument pdf = await renderer.RenderHtmlAsPdfAsync(htmlToRender.ToString());
 
@@ -187,6 +188,12 @@ namespace Chatbot.Controllers
 
             // Return the PDF as byte array
             return pdf.BinaryData;
+        }
+
+        [HttpGet("/getVersion")]
+        public string GetVersion()
+        {
+            return "1.0";
         }
     }
 }

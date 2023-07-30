@@ -11,17 +11,20 @@ using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
-
+using Backend.Constants;
 
 namespace Chatbot.Services
 {
     public class ChatbotService
     {
+
         HttpClient httpClient = new HttpClient();
         public string CallOpenAPI_text(string prompt)
         {
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            //DotNetEnv.Env.Load();
+            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string apikey = ApiKeyConstant.OpenAI_Key;
+
             string answer = string.Empty;
 
             var openai = new OpenAIAPI(apikey);
@@ -43,8 +46,9 @@ namespace Chatbot.Services
 
         public string CallOpenAPI_chat(List<ChatMessage> previousChats)
         {
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            //DotNetEnv.Env.Load();
+            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string apikey = ApiKeyConstant.OpenAI_Key;
             string answer = string.Empty;
 
             StringBuilder promptBuilder = new StringBuilder("");
@@ -79,13 +83,11 @@ namespace Chatbot.Services
             return answer;
         }
 
-        public string CallOpenAPI_Sections(string prompt)
+        public async Task<string> CallOpenAPI_Sections(string prompt)
         {
+            string query = "just give me the title of 3 sections of the prompt " + prompt + ", each separated by comma";
+            string apikey = ApiKeyConstant.OpenAI_Key;
 
-            //string query = "I need a 3 Sections for the '" + prompt +" ' separated by comma";
-            string query = "just give me the titile of 3 sections of the prompt" + prompt + ", each separated by comma";
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             string answer = string.Empty;
 
             var openai = new OpenAIAPI(apikey);
@@ -94,24 +96,30 @@ namespace Chatbot.Services
             completion.Model = OpenAI_API.Models.Model.DavinciText;
             completion.MaxTokens = 100;
 
-            var result = openai.Completions.CreateCompletionsAsync(completion);
+            var result = await openai.Completions.CreateCompletionsAsync(completion);
             if (result != null)
             {
-                foreach (var item in result.Result.Completions)
+                var stringBuilder = new StringBuilder();
+                foreach (var item in result.Completions)
                 {
-                    answer = item.Text;
+                    stringBuilder.AppendLine(item.Text);
                 }
+                answer = stringBuilder.ToString();
             }
+
             return answer;
         }
+
 
         public string CallOpenAPI_Title(string prompt)
         {
             
             string query = "I need a title for the " + prompt;
-            
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+
+            //DotNetEnv.Env.Load();
+            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string apikey = ApiKeyConstant.OpenAI_Key;
+
             string answer = string.Empty;
 
             var openai = new OpenAIAPI(apikey);
@@ -135,8 +143,11 @@ namespace Chatbot.Services
         {
             string query = "I need a Description for the " + prompt;
 
-            DotNetEnv.Env.Load();
-            string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            //DotNetEnv.Env.Load();
+            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            string apikey = ApiKeyConstant.OpenAI_Key;
+
+
             string answer = string.Empty;
 
             var openai = new OpenAIAPI(apikey);
@@ -158,9 +169,11 @@ namespace Chatbot.Services
 
         public async Task<string> Call_StableDiffusion(string prompt)
         {
-            DotNetEnv.Env.Load();
+            //DotNetEnv.Env.Load();
+            //string apiKey = Environment.GetEnvironmentVariable("STABLE_DIFFUSION_KEY");
+            string apikey = ApiKeyConstant.StablleDiffusion_Key;
 
-            string apiKey = Environment.GetEnvironmentVariable("STABLE_DIFFUSION_KEY");
+
             //string prompt = reqPrompt;
             string apiUrl = "https://stablediffusionapi.com/api/v3/text2img";
 
