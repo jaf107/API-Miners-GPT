@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenAI_API;
 using OpenAI_API.Completions;
-using DotNetEnv;
 using Chatbot.Models;
 using IronOcr;
 using Newtonsoft.Json;
@@ -98,20 +97,6 @@ namespace Chatbot.Controllers
             return BadRequest("No image file was uploaded.");
         }
 
-        //[HttpPost("/api/v1/generate/image", Name ="GenerateImageFromPrompt")]
-        //private async Task<IActionResult> GenerateImageFromPrompt([FromBody] MessageRequest request)
-        //{
-        //    var result = await new ChatbotService().Call_StableDiffusion(request.Message);
-        //    var jsonObject = JsonConvert.DeserializeObject<dynamic>(result);
-
-
-        //    if (result != null)
-        //        return Ok(result);
-        //    else
-        //        return BadRequest("Not found");
-
-        //}
-
         [HttpPost("/api/v1/generate/pdf", Name = "GetPdfResponse")]
         public async Task<IActionResult> GetPdfResponse([FromBody] MessageRequest request)
         {
@@ -131,7 +116,7 @@ namespace Chatbot.Controllers
         public async Task<IActionResult> GetPdfResponseV2([FromBody] MessageRequest request)
         {
             var sectionString = new ChatbotService().CallOpenAPI_Sections(request.Message);
-            string[] sections = sectionString.Split(',');
+            string[] sections = sectionString.ToString().Split(',');
             var htmlToRender = new StringBuilder(); // Use StringBuilder for efficient string concatenation
             //foreach (string s in sections)
             //{

@@ -21,8 +21,6 @@ namespace Chatbot.Services
         HttpClient httpClient = new HttpClient();
         public string CallOpenAPI_text(string prompt)
         {
-            //DotNetEnv.Env.Load();
-            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             string apikey = ApiKeyConstant.OpenAI_Key;
 
             string answer = string.Empty;
@@ -46,8 +44,7 @@ namespace Chatbot.Services
 
         public string CallOpenAPI_chat(List<ChatMessage> previousChats)
         {
-            //DotNetEnv.Env.Load();
-            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            
             string apikey = ApiKeyConstant.OpenAI_Key;
             string answer = string.Empty;
 
@@ -116,8 +113,6 @@ namespace Chatbot.Services
             
             string query = "I need a title for the " + prompt;
 
-            //DotNetEnv.Env.Load();
-            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             string apikey = ApiKeyConstant.OpenAI_Key;
 
             string answer = string.Empty;
@@ -142,9 +137,6 @@ namespace Chatbot.Services
         public string CallOpenAPI_Description(string prompt)
         {
             string query = "I need a Description for the " + prompt;
-
-            //DotNetEnv.Env.Load();
-            //string apikey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
             string apikey = ApiKeyConstant.OpenAI_Key;
 
 
@@ -169,19 +161,15 @@ namespace Chatbot.Services
 
         public async Task<string> Call_StableDiffusion(string prompt)
         {
-            //DotNetEnv.Env.Load();
-            //string apiKey = Environment.GetEnvironmentVariable("STABLE_DIFFUSION_KEY");
             string apikey = ApiKeyConstant.StablleDiffusion_Key;
 
-
-            //string prompt = reqPrompt;
             string apiUrl = "https://stablediffusionapi.com/api/v3/text2img";
 
             using HttpClient client = new HttpClient();
 
             var requestData = new
             {
-                key = apiKey,
+                key = apikey,
                 prompt = prompt
             };
 
@@ -194,8 +182,6 @@ namespace Chatbot.Services
             }
             else
             {
-                // Handle the case when the API request fails
-                // You can throw an exception or return an appropriate error message
                 return string.Empty;
             }
         }
